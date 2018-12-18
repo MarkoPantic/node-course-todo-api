@@ -1,9 +1,11 @@
 var mongoose = require('mongoose');
 
+var dbURL = process.env.MONGODB_URI || 'mongodb://localhost:27017/TodoApp';
+
 mongoose.Promise = global.Promise;
-mongoose.connect('mongodb://localhost:27017/TodoApp', { useNewUrlParser: true })
+mongoose.connect(dbURL, { useNewUrlParser: true })
     .then(() => {
-        console.log(`Succsesfull`);
+        console.log(`Database connected succsesfully`);
     }, e => {
         console.log(e);
     });
