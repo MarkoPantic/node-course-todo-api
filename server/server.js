@@ -1,80 +1,47 @@
-var mongoose = require('mongoose');
+var express = require('express');
+var bodyParser = require('body-parser');
 
-mongoose.Promise = global.Promise;
-mongoose.connect('mongodb://localhost:27017/TodoApp', { useNewUrlParser: true })
-    .then(() => {
-        console.log(`Succsesfull`);
-    }, e => {
-        console.log(e);
-    });
+var {mongoose} = require('./db/mongoose')
+var {Todo} = require('./models/todo');
+var {User} = require('./models/user');
 
-// var Todo = mongoose.model('Todo', {
-//     text: {
-//         type: String,
-//         required: true,
-//         minlenght: 1,
-//         trim: true,
+var app = express();
 
-//     },
-//     completed: {
-//         type: Boolean,
-//         default: false
+app.use(bodyParser.json());
 
-//     },
-//     completedAt: {
-//         type: Number,
-//         default: null
-//     }
-// });
-
-
-
-var User = mongoose.model('User', {
-    email: {
-        required: true,
-        trim: true,
-        type: String,
-        minlenght: 1
-    }
-})
-
-// var newTodo = new Todo({
-//     text: 'Cook diner'
-// })
-
-// newTodo.save()
-//     .then((res) => {
-//         console.log(`Saved todo: ${res}`);
-//     }, (e) => {
-//         console.log(e);
-//     })
-
-
-// var secondTodo = new Todo({
-//     text: 1234
-// })
-
-// secondTodo.save()
-//     .then((res) => {
-//         console.log(`New todo saved: ${res}`);
-//     })
-//     .catch((err) => {
-//         console.log(`An error occured: ${err}`);
-//     })
-
-
-
-
-
-var user1 = new User({
-    email: 'marko@gmail.com'
-})
-
-
-user1.save()
-    .then((res) => {
-        console.log(`User added: ${res}`);
+app.post('/todos', (req, res) => {
+    var todo = new Todo({
+        text: req.body.text
     })
-    .then(() => mongoose.connection.close())
-    .catch(e => console.log(e));
-    
+
+    todo.save()
+        .then((doc) => {
+            res.send(doc)
+        })
+        .catch((e) => {
+            res.status(400).send(e)
+        })
+})
+
+
+
+app.post('/user', (req, res) => {
+    var user = new User({
+        email: req.body.email
+    })
+
+    user.save()
+        .then((r) => {
+            res.send(r)
+        })
+        .catch((e) => {
+            console.log(`An error has occured ${e}`);
+            res.send(e)
+        })
+})
+
+
+app.listen(3000, () => {
+    console.log(`Started on port 3000`);
+})
+
