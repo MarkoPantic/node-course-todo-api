@@ -2,13 +2,15 @@ const express = require('express');
 var bodyParser = require('body-parser');
 const _ = require('lodash')
 
+
+require('./config/config')
 const {mongoose} = require('./db/mongoose')
 const {Todo} = require('./models/todo');
 const {User} = require('./models/user');
 const { ObjectID } = require('mongodb');
 
 var app = express();
-const port = process.env.PORT || 3000
+const port = process.env.PORT
 
 
 app.use(bodyParser.json());
@@ -100,7 +102,7 @@ app.patch(`/todos/:id`, (req, res) => {
         res.status(404).send()
         return console.log(`${id} not a valid id`);
     }
-    console.log(`oov je gore`, req);
+
 
     if (_.isBoolean(body.completed) && body.completed) {
         body.completedAt = new Date().getTime()
@@ -108,7 +110,6 @@ app.patch(`/todos/:id`, (req, res) => {
         body.completed = false;
         body.completedAt = null;
     }
-    console.log(body);
 
     Todo.findByIdAndUpdate(id, {
         $set: body
@@ -118,7 +119,6 @@ app.patch(`/todos/:id`, (req, res) => {
         useFindAndModify: false
     })
     .then((todo) => {
-        console.log(`usao sam ovde`, todo);
         if (!todo) {
             return res.status(404).send()
         }
